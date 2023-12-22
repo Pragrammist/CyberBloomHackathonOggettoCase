@@ -52,12 +52,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             // валидация ключа безопасности
             ValidateIssuerSigningKey = true,
          };
-    })
-.AddGoogle(googleOptions =>
-{
-    googleOptions.ClientId = configuration["Authentication:Google:ClientId"] ?? throw new NullReferenceException("");
-    googleOptions.ClientSecret = configuration["Authentication:Google:ClientSecret"] ?? throw new NullReferenceException("");
-});
+    });
+// .AddGoogle(googleOptions =>
+// {
+//     googleOptions.ClientId = configuration["Authentication:Google:ClientId"] ?? throw new NullReferenceException("");
+//     googleOptions.ClientSecret = configuration["Authentication:Google:ClientSecret"] ?? throw new NullReferenceException("");
+// });
 
 // builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
 //     .AddEntityFrameworkStores<ApplicationContext>();
