@@ -1,0 +1,21 @@
+variables:
+  DOCKER_IMAGE_NAME: '$CI_REGISTRY_USER/$CI_COMMIT_BRANCH'
+
+default:
+  image: docker:latest
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+stages:
+  - build-docker-image
+
+
+
+build-docker-image:
+  stage: build
+  
+  script:
+    - docker build -t '$DOCKER_IMAGE_NAME' .
+    - docker push '$DOCKER_IMAGE_NAME'
