@@ -86,8 +86,12 @@ public class MeetingsController : ControllerBase
     public async Task<IActionResult> Post([FromForm]PostMeetingDto meeting)
     {
         await meeting.SpeackerImage.WriteFileToDirectory();
+        await meeting.PlaceImages.WriteFileToDirectory();
         var meetingWrite = meeting.Adapt<Meeting>();
+        
         meetingWrite.SpeackerImage = meeting.SpeackerImage.JoinFileNames();
+        meetingWrite.PlaceImages = meeting.PlaceImages.JoinFileNames();
+
         await _applicationContext.Meetings.AddAsync(meetingWrite);
 
         await _applicationContext.SaveChangesAsync();
@@ -102,8 +106,13 @@ public class MeetingsController : ControllerBase
     public async Task<IActionResult> Put([FromForm]PutMeetingDto meeting)
     {
         await meeting.SpeackerImage.WriteFileToDirectory();
+        await meeting.PlaceImages.WriteFileToDirectory();
+
         var meetingWrite = meeting.Adapt<Meeting>();
+        
         meetingWrite.SpeackerImage = meeting.SpeackerImage.JoinFileNames();
+        meetingWrite.PlaceImages = meeting.PlaceImages.JoinFileNames();
+        
         var findedMeeting = await _applicationContext.Meetings.FirstAsync(s => s.Id == meeting.Id);
         findedMeeting = meetingWrite;
 

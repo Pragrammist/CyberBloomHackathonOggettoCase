@@ -18,6 +18,9 @@ public class PostMeetingDto
     public string SpeakerName { get; set; } = null!;
 
     public IEnumerable<IFormFile> SpeackerImage { get; set; } = null!;
+    
+    public IEnumerable<IFormFile> PlaceImages { get; set; } = null!;
+
 
     public string Splecializations { get; set; } = null!;
 
@@ -46,6 +49,8 @@ public class PutMeetingDto
     public string SpeakerName { get; set; } = null!;
 
     public IEnumerable<IFormFile> SpeackerImage { get; set; } = null!;
+
+    public IEnumerable<IFormFile> PlaceImages { get; set; } = null!;
 
     public string Splecializations { get; set; } = null!;
 
@@ -82,6 +87,9 @@ public class Meeting
 
     public string SpeakerTelephone { get; set; } = null!;
 
+
+    public string PlaceImages { get; set; } = null!;
+
     public string SpeakerEmail { get; set; } = null!;
 
     public string Tags { get; set; } = null!;
@@ -96,7 +104,7 @@ public class ApplicationContext : IdentityDbContext<User>
     public ApplicationContext(DbContextOptions<ApplicationContext> options)
         : base(options)
     {
-        Database.EnsureCreated();
+        Database.Migrate();
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
