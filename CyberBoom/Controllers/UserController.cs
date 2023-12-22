@@ -10,7 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 namespace CyberBoom.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("/api/[controller]")]
 public class UserController : ControllerBase
 {
     private static readonly string[] Summaries = new[]
@@ -73,8 +73,8 @@ public class UserController : ControllerBase
 
 
 [ApiController]
-[Route("[controller]")]
-public class MeetingController : ControllerBase
+[Route("/api/[controller]")]
+public class MeetingsController : ControllerBase
 {
     private static readonly string[] Summaries = new[]
     {
@@ -85,7 +85,7 @@ public class MeetingController : ControllerBase
 
     private readonly ApplicationContext _applicationContext;
 
-    public MeetingController(ILogger<UserController> logger, ApplicationContext applicationContext)
+    public MeetingsController(ILogger<UserController> logger, ApplicationContext applicationContext)
     {
         _logger = logger;
         _applicationContext = applicationContext;
@@ -131,7 +131,7 @@ public class MeetingController : ControllerBase
     }
 
     
-    [HttpGet("/list")]
+    [HttpGet("list")]
     public IActionResult GetList(int offset, int limit)
     {
         var meetings = _applicationContext.Meetings.Skip(offset).Take(limit);
