@@ -26,7 +26,7 @@ var configuration = builder.Configuration;
 
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationContext>(options =>
-                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+                options.UseNpgsql(builder.Configuration["CONNECTION_STRING"]));
 
 builder.Services.AddIdentity<User, IdentityRole>()
 .AddEntityFrameworkStores<ApplicationContext>();
