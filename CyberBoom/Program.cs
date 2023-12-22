@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Mapster;
 using static Consts;
+using Microsoft.Extensions.FileProviders;
 
 
 TypeAdapterConfig<PutMeetingDto, Meeting>.NewConfig().Map(d => d.SpeackerImage, s => s.SpeackerImage.JoinFileNames()); 
@@ -72,6 +73,12 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 app.UseHttpsRedirection();
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+           Path.Combine(builder.Environment.ContentRootPath, "cyber-boom-files")),
+    RequestPath = "/cyber-boom-files"
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
