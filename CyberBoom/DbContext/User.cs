@@ -104,7 +104,13 @@ public class ApplicationContext : IdentityDbContext<User>
     public ApplicationContext(DbContextOptions<ApplicationContext> options)
         : base(options)
     {
-        Database.Migrate();
+        try{
+            Database.Migrate();
+        }
+        catch
+        {
+            Database.EnsureCreated();
+        }
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
