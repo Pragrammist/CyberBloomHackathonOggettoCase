@@ -77,7 +77,7 @@ app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(
            Path.Combine(builder.Environment.ContentRootPath, "cyber-boom-files")),
-    RequestPath = "/cyber-boom-files"
+    RequestPath = "/api/cyber-boom-files"
 });
 
 // Configure the HTTP request pipeline.
