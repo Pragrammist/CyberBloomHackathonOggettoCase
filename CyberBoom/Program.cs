@@ -20,7 +20,7 @@ TypeAdapterConfig<PutMeetingDto, Meeting>.NewConfig().Map(d => d.Splecialization
 TypeAdapterConfig<PostMeetingDto, Meeting>.NewConfig().Map(d => d.Time, s => s.Time.ToUniversalTime());
 
 TypeAdapterConfig<PutMeetingDto, Meeting>.NewConfig().Map(d => d.Time, s => s.Time.ToUniversalTime());
-
+var dir = Directory.CreateDirectory("cyber-boom-files");
 var builder = WebApplication.CreateBuilder(args);
 var configuration = builder.Configuration;
 
