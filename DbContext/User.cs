@@ -19,7 +19,17 @@ public class PostMeetingDto
 
     public IEnumerable<IFormFile> SpeackerImage { get; set; } = null!;
 
-    public IEnumerable<string> Splecializations { get; set; } = null!;
+    public string Splecializations { get; set; } = null!;
+
+    public string Type { get; set; } = "онлайн/офлайн";
+
+    public string SpeakerTelephone { get; set; } = null!;
+
+    public string SpeakerEmail { get; set; } = null!;
+
+    public string Tags { get; set; } = null!;
+
+    public string VideoUrl { get; set; } = null!;
 }
 
 
@@ -37,7 +47,18 @@ public class PutMeetingDto
 
     public IEnumerable<IFormFile> SpeackerImage { get; set; } = null!;
 
-    public IEnumerable<string> Splecializations { get; set; } = null!;
+    public string Splecializations { get; set; } = null!;
+
+
+    public string Type { get; set; } = "онлайн/офлайн";
+
+    public string SpeakerTelephone { get; set; } = null!;
+
+    public string SpeakerEmail { get; set; } = null!;
+
+    public string Tags { get; set; } = null!;
+
+    public string VideoUrl { get; set; } = null!;
 }
 
 public class Meeting
@@ -55,6 +76,17 @@ public class Meeting
     public string SpeackerImage { get; set; } = null!;
 
     public string Splecializations { get; set; } = null!;
+
+    
+    public string Type { get; set; } = "онлайн/офлайн";
+
+    public string SpeakerTelephone { get; set; } = null!;
+
+    public string SpeakerEmail { get; set; } = null!;
+
+    public string Tags { get; set; } = null!;
+
+    public string VideoUrl { get; set; } = null!;
 }
 
 

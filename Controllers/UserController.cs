@@ -98,7 +98,6 @@ public class MeetingController : ControllerBase
         await meeting.SpeackerImage.WriteFileToDirectory();
         var meetingWrite = meeting.Adapt<Meeting>();
         meetingWrite.SpeackerImage = meeting.SpeackerImage.JoinFileNames();
-        meetingWrite.Splecializations = meeting.Splecializations.JoinStrings();
         await _applicationContext.Meetings.AddAsync(meetingWrite);
 
         await _applicationContext.SaveChangesAsync();
@@ -115,8 +114,7 @@ public class MeetingController : ControllerBase
         await meeting.SpeackerImage.WriteFileToDirectory();
         var meetingWrite = meeting.Adapt<Meeting>();
         meetingWrite.SpeackerImage = meeting.SpeackerImage.JoinFileNames();
-        meetingWrite.Splecializations = meeting.Splecializations.JoinStrings();
-        var findedMeeting = await _applicationContext.Meetings.FirstAsync<Meeting>(s => s.Id == meeting.Id);
+        var findedMeeting = await _applicationContext.Meetings.FirstAsync(s => s.Id == meeting.Id);
         findedMeeting = meetingWrite;
 
         await _applicationContext.SaveChangesAsync();
