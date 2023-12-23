@@ -15,6 +15,8 @@ public class User : IdentityUser
     public string TelegramBotUrl { get; set; } = null!;
 
     public int Level { get; set; }
+
+
 }
 
 public class UserPost
@@ -30,11 +32,28 @@ public class UserPost
     public string TelegramBotUrl { get; set; } = null!;
 }
 
+public class StatsData
+{
+    public double Hours{ get; set; }
+
+    public int Count { get; set; }
+
+    public List<TagStats> StatsByTag { get; set; } = new List<TagStats>();
+
+    public class TagStats
+    {
+        public string Tag { get; set; } = null!;
+
+        public int Count { get; set; }
+
+        public double Hours { get; set; }
+    }
+}
 
 public class UserPut
 {
     public string Id { get; set; } = null!;
-    
+
     public IFormFile Avatar { get; set; } = null!;
 
     public string Fio { get; set; } = null!;
@@ -148,7 +167,7 @@ public class Meeting
 
     public string SpeackerImage { get; set; } = null!;
 
-    public string Splecializations { get; set; } = null!;
+    public string Splecializations { get; set; } = null!; //speacker specilization
 
     
     public string Type { get; set; } = "онлайн/офлайн";
@@ -254,6 +273,18 @@ public class Review
 }
 
 
+public class Achievment
+{
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public string Id { get; set; } = null!;
+
+    public string UserId { get; set; } = null!;
+
+    public string Name { get; set; } = null!;
+
+    public string Text { get; set; } = null!;
+}
+
 
 public class PostReactionDto
 {
@@ -293,6 +324,9 @@ public class ApplicationContext : IdentityDbContext<User>
 
     public DbSet<Question> Questions { get; set; }
 
+
+    public DbSet<Achievment> Achievments { get; set; }
+
     public ApplicationContext(DbContextOptions<ApplicationContext> options)
         : base(options)
     {
@@ -318,5 +352,7 @@ public class ApplicationContext : IdentityDbContext<User>
 
         builder.Entity<Meeting>().HasMany<UserWriteToMeting>().WithOne().HasForeignKey(c => c.MeetingId);
         builder.Entity<UserWriteToMeting>().HasOne<User>().WithMany().HasForeignKey(c => c.UserId);
+    
+        builder.Entity<Achievment>().HasOne<User>().WithMany().HasForeignKey(c => c.UserId);
     }
 }
