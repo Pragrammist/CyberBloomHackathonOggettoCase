@@ -5,13 +5,27 @@ using Microsoft.EntityFrameworkCore;
 public class User : IdentityUser
 {
     public string AvatarUrl { get; set; } = null!;
+
+    public string Fio { get; set; } = null!;
+
+    public string Specialities { get; set; } = null!;
+
+    public string TelegramBotUrl { get; set; } = null!;
+
+    public int Level { get; set; }
 }
 
 public class UserPost
 {
     public IFormFile Avatar { get; set; } = null!;
 
+    public string Fio { get; set; } = null!;
+
     public string Username { get; set; } = null!;
+
+    public string Specialities { get; set; } = null!;
+
+    public string TelegramBotUrl { get; set; } = null!;
 }
 
 public class PostMeetingDto
@@ -39,7 +53,11 @@ public class PostMeetingDto
 
     public string Tags { get; set; } = null!;
 
-    public string VideoUrl { get; set; } = null!;
+    public string Urls { get; set; } = null!;
+
+    public string PlaceAdress { get; set; } = null!;
+
+    public string Duration { get; set; } = null!;
 }
 
 
@@ -88,8 +106,13 @@ public class PutMeetingDto
 
     public string Tags { get; set; } = null!;
 
-    public string VideoUrl { get; set; } = null!;
+    public string Urls { get; set; } = null!;
+
+    public string PlaceAdress { get; set; } = null!;
+
+    public string Duration { get; set; } = null!;
 }
+
 
 public class Meeting
 {
@@ -119,12 +142,11 @@ public class Meeting
 
     public string Tags { get; set; } = null!;
 
-    public string VideoUrl { get; set; } = null!;
+    public string Urls { get; set; } = null!;
 
-    
-    // public string MeetingChatUrl { get; set; } = null!;
+    public string PlaceAdress { get; set; } = null!;
 
-    // public string SocialUrls { get; set; } = null!;
+    public string Duration { get; set; } = null!;
 }   
 
 
@@ -159,6 +181,18 @@ public class PutReviewDto
 }
 
 
+public class Question
+{
+    public long Id { get; set; }
+
+    public string Text { get; set; } = null!;
+
+    public long MeetingId { get; set; }
+
+    public string UserId { get; set; } = null!;
+}
+
+
 public class Review
 {
     public long Id { get; set; }
@@ -183,30 +217,20 @@ public class Review
 public class PostReactionDto
 {
 
-    public long ReviewId { get; set; }
+    public long QuestionId { get; set; }
 
     public string UserId { get; set; } = null!;
 
     public bool IsLike { get; set; } = true;
 }
 
-public class PutReactionDto
-{
-    public long Id { get; set; }
-
-    public long ReviewId { get; set; }
-
-    public string UserId { get; set; } = null!;
-
-    public bool IsLike { get; set; } = true;
-}
 
 
 public class Reaction
 {
     public long Id { get; set; }
 
-    public long ReviewId { get; set; }
+    public long QuestionId { get; set; }
 
     public string UserId { get; set; } = null!;
 
@@ -222,7 +246,10 @@ public class ApplicationContext : IdentityDbContext<User>
     public DbSet<Review> Reviews { get; set; }
 
     public DbSet<Reaction> Reactions { get; set; }
+    
     public DbSet<UserWriteToMeting> UserWriteToMetings { get; set; }
+
+    public DbSet<Question> Questions { get; set; }
 
     public ApplicationContext(DbContextOptions<ApplicationContext> options)
         : base(options)
@@ -234,9 +261,14 @@ public class ApplicationContext : IdentityDbContext<User>
     {
         base.OnModelCreating(builder);
         builder.Entity<Meeting>().HasMany<Review>().WithOne().HasForeignKey(c => c.MeetingId);
+        builder.Entity<Meeting>().HasMany<Question>().WithOne().HasForeignKey(c => c.MeetingId);
+
         builder.Entity<User>().HasMany<Review>().WithOne(r => r.User).HasForeignKey(c => c.UserId);
         builder.Entity<User>().HasMany<Reaction>().WithOne().HasForeignKey(c => c.UserId);
-        builder.Entity<Review>().HasMany<Reaction>().WithOne().HasForeignKey(c => c.ReviewId);
+        builder.Entity<User>().HasMany<Question>().WithOne().HasForeignKey(c => c.UserId);
+
+        builder.Entity<Question>().HasMany<Reaction>().WithOne().HasForeignKey(c => c.QuestionId);
+
         builder.Entity<Meeting>().HasMany<UserWriteToMeting>().WithOne().HasForeignKey(c => c.MeetingId);
         builder.Entity<User>().HasMany<UserWriteToMeting>().WithOne().HasForeignKey(c => c.UserId);
     }

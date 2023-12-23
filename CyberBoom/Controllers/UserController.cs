@@ -34,7 +34,10 @@ public class UsersController : ControllerBase
         await user.Avatar.WriteFileToDirectory();
         var userWr = new User {
             AvatarUrl = user.Avatar.FileName,
-            UserName = user.Username
+            Fio = user.Fio,
+            Specialities = user.Specialities,
+            TelegramBotUrl = user.TelegramBotUrl,
+
         };
         await _userManager.CreateAsync(userWr);
 
@@ -221,6 +224,69 @@ public class ReviewsController : ControllerBase
 
         
         return Ok(reviews);
+    }
+}
+
+
+
+[ApiController]
+[Route("/api/[controller]")]
+public class QuestionsController : ControllerBase
+{
+
+    private readonly ApplicationContext _applicationContext;
+
+    public QuestionsController(ApplicationContext applicationContext)
+    {
+        _applicationContext = applicationContext;
+    }
+
+
+    [HttpPost]
+    public async Task<IActionResult> Post([FromBody] Question question)
+    {
+        await _applicationContext.Questions.AddAsync(question);
+        
+        await _applicationContext.SaveChangesAsync();
+        
+        return Ok(new {
+            question.Id
+        });
+    }
+
+    [HttpPut]
+    public async Task<IActionResult> Put([FromBody]Question question)
+    {
+        
+        var fReview = await _applicationContext.Questions.FirstAsync(r => r.Id == question.Id);
+        
+        fReview.Text = question.Text;
+        
+        await _applicationContext.SaveChangesAsync();
+        
+        return Ok();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Get(int id)
+    {
+        var question = await _applicationContext.Questions
+            .FirstAsync(s => s.Id == id);
+
+        
+        return Ok(question);
+    }
+
+    
+    [HttpGet("list")]
+    public IActionResult GetList(int offset, int limit)
+    {
+        var questions = _applicationContext.Questions
+            .Skip(offset)
+            .Take(limit);
+
+        
+        return Ok(questions);
     }
 }
 
