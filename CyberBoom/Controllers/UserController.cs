@@ -22,10 +22,13 @@ public class UsersController : ControllerBase
 
     private readonly UserManager<User> _userManager;
 
-    public UsersController(ApplicationContext applicationContext, UserManager<User> userManager)
+    private readonly RoleManager<IdentityRole> _roleManager;
+
+    public UsersController(ApplicationContext applicationContext, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
     {
         _applicationContext = applicationContext;
         _userManager = userManager;
+        _roleManager = roleManager;
     }
 
     [HttpPost]
@@ -49,36 +52,85 @@ public class UsersController : ControllerBase
         return BadRequest(result.Errors);
     }
 
-    // [HttpGet("google-auth")]
-    // public IActionResult Regiester()
-    // {
-    //     var properties = new AuthenticationProperties{
-    //         RedirectUri = Url.Action("GoogleResponse")
-    //     };
-    //     return Challenge(properties, GoogleDefaults.AuthenticationScheme);
-    // }
+    [HttpPut]
+    public async Task<IActionResult> Put([FromForm]UserPut user)
+    {
+        await user.Avatar.WriteFileToDirectory();
+        
+        var fuser = await _userManager.FindByIdAsync(user.Id);
 
-    // [Route("google-response")]
-    // public async Task<IActionResult> GoogleResponse()
-    // {
-    //     var result = await HttpContext.AuthenticateAsync(JwtBearerDefaults.AuthenticationScheme);
+        if(fuser is null)
+            throw new Exception("user not found");
 
-    //     var claims = result?.Principal?.Identities.First().Claims;
-    //     var jwt = new JwtSecurityToken(
-    //         issuer: AuthOptions.ISSUER,
-    //         audience: AuthOptions.AUDIENCE,
-    //         claims: claims,
-    //         expires: DateTime.UtcNow.Add(TimeSpan.FromMinutes(2)),
-    //         signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
+        
+        fuser.AvatarUrl = user.Avatar.FileName;
+        fuser.Fio = user.Fio;
+        fuser.Specialities = user.Specialities;
+        fuser.TelegramBotUrl = user.TelegramBotUrl;
+        fuser.UserName = user.Username;
+
+        var result = await _userManager.UpdateAsync(fuser);
+        if(result.Succeeded)
+            return Ok(
+               
+            );
+        return BadRequest(result.Errors);
+    }
+
+    [HttpPost("moderator")]
+    public async Task<IActionResult> PostModerator([FromForm]UserPost user)
+    {
+
+        await user.Avatar.WriteFileToDirectory();
+        var userWr = new User {
+            AvatarUrl = user.Avatar.FileName,
+            Fio = user.Fio,
+            Specialities = user.Specialities,
+            TelegramBotUrl = user.TelegramBotUrl,
+            UserName = user.Username
+        };
+        
+        
+
+        var result = await _userManager.CreateAsync(userWr);
+        
+        if(!result.Succeeded)
+            return BadRequest(result.Errors);
+        
+        var isExists = await _roleManager.RoleExistsAsync("модератор");
+
+        if(!isExists){
+            var roleResult = await _roleManager.CreateAsync(new IdentityRole("модератор"));
+            if(!roleResult.Succeeded)
+                throw new Exception("cannot create role");
+        }
             
-    //     var strJwt = new JwtSecurityTokenHandler().WriteToken(jwt);
+        var addingRole = await _userManager.AddToRoleAsync(userWr, "модератор");
 
-    //     return Ok(new {
-    //         Token = strJwt
-    //     });
-    // }
+        if(!addingRole.Succeeded)
+            throw new Exception("cannot create role");
 
-    
+        return Ok(
+                new {
+                    userWr.Id
+                }
+            );
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetUserData(string id)
+    {
+        var user = await _userManager.FindByIdAsync(id);
+
+        if(user is null)
+            return BadRequest();
+
+        var role = await _userManager.GetRolesAsync(user);
+        return Ok(new {
+            user,
+            role
+        });
+    } 
 }
 
 
