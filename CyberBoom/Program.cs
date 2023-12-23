@@ -114,17 +114,19 @@ public static class PhileDataHelpers
 
     public static string JoinStrings(this IEnumerable<string> files) => String.Join(FILES_SEPORATOR_IN_STORE, files.Select(s => s));
 
-
-    public static async Task WriteFileToDirectory(this IEnumerable<IFormFile> files)
+    public static async Task WriteFileToDirectory(this IFormFile file)
     {
-        var dir = Directory.CreateDirectory("cyber-boom-files");
-        
+        var readStream = file.OpenReadStream();
+        var memstream = new MemoryStream();
+        await readStream.CopyToAsync(memstream);
+        await File.WriteAllBytesAsync(Path.Combine("cyber-boom-files", file.FileName), memstream.ToArray());
+    }
+
+    public static async Task WriteFilesToDirectory(this IEnumerable<IFormFile> files)
+    {   
         foreach(var file in files)
         {
-            var readStream = file.OpenReadStream();
-            var memstream = new MemoryStream();
-            await readStream.CopyToAsync(memstream);
-            await File.WriteAllBytesAsync(Path.Combine(dir.FullName, file.FileName), memstream.ToArray());
+            await file.WriteFileToDirectory();
         }
         
     }
