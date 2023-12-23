@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
+
 
 public class User : IdentityUser
 {
@@ -63,25 +65,26 @@ public class PostMeetingDto
 
 public class UserWriteToMeting
 {
-    public long Id { get; set; }
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public String Id { get; set; } = null!;
 
-    public string UserId { get; set; } = null!;
+    public String UserId { get; set; } = null!;
 
-    public long MeetingId { get; set; }
+    public String MeetingId { get; set; } = null!;
 }
 
 
 public class PostUserWriteToMetingDto
 {
-    public string UserId { get; set; } = null!;
+    public String UserId { get; set; }  = null!;
 
-    public long MeetingId { get; set; }
+    public String MeetingId { get; set; } = null!;
 }
 
 
 public class PutMeetingDto
 {
-    public long Id { get; set; }
+    public String Id { get; set; } = null!;
 
     public DateTime Time { get; set; }
 
@@ -116,7 +119,8 @@ public class PutMeetingDto
 
 public class Meeting
 {
-    public long Id { get; set; }
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public String Id { get; set; } = null!;
 
     public DateTime Time { get; set; }
 
@@ -152,9 +156,9 @@ public class Meeting
 
 public class PostReviewDto
 {
-    public long MeetingId { get; set; }
+    public String MeetingId { get; set; } = null!;
     
-    public string UserId { get; set; } = null!;
+    public String UserId { get; set; } = null!;
 
     public string Text { get; set; } = null!;
 
@@ -169,7 +173,7 @@ public class PostReviewDto
 
 public class PutReviewDto
 {
-    public long Id { get; set; }
+    public string Id { get; set; } = null!;
     
     public string Text { get; set; } = null!;
 
@@ -181,13 +185,24 @@ public class PutReviewDto
 }
 
 
+public class PostQuestionDto
+{
+    public string Text { get; set; } = null!;
+
+    public string MeetingId { get; set; } = null!;
+
+    public string UserId { get; set; } = null!;
+}
+
+
 public class Question
 {
-    public long Id { get; set; }
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public string Id { get; set; } = null!;
 
     public string Text { get; set; } = null!;
 
-    public long MeetingId { get; set; }
+    public string MeetingId { get; set; } = null!;
 
     public string UserId { get; set; } = null!;
 }
@@ -195,9 +210,10 @@ public class Question
 
 public class Review
 {
-    public long Id { get; set; }
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public string Id { get; set; } = null!;
 
-    public long MeetingId { get; set; }
+    public string MeetingId { get; set; } = null!;
 
     public User User { get; set; } = null!;
     
@@ -217,7 +233,7 @@ public class Review
 public class PostReactionDto
 {
 
-    public long QuestionId { get; set; }
+    public string QuestionId { get; set; } = null!;
 
     public string UserId { get; set; } = null!;
 
@@ -228,9 +244,10 @@ public class PostReactionDto
 
 public class Reaction
 {
-    public long Id { get; set; }
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public string Id { get; set; } = null!;
 
-    public long QuestionId { get; set; }
+    public string QuestionId { get; set; } = null!;
 
     public string UserId { get; set; } = null!;
 
@@ -265,7 +282,7 @@ public class ApplicationContext : IdentityDbContext<User>
 
         builder.Entity<User>().HasMany<Review>().WithOne(r => r.User).HasForeignKey(c => c.UserId);
         builder.Entity<User>().HasMany<Reaction>().WithOne().HasForeignKey(c => c.UserId);
-        builder.Entity<User>().HasMany<Question>().WithOne().HasForeignKey(c => c.UserId);
+        builder.Entity<Question>().HasOne<Meeting>().WithMany().HasForeignKey(c => c.UserId);
 
         builder.Entity<Question>().HasMany<Reaction>().WithOne().HasForeignKey(c => c.QuestionId);
 

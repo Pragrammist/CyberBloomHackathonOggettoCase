@@ -137,7 +137,7 @@ public class MeetingsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get(int id)
+    public async Task<IActionResult> Get(string id)
     {
         var meeting = await _applicationContext.Meetings.FirstOrDefaultAsync(s => s.Id == id);
 
@@ -203,7 +203,7 @@ public class ReviewsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get(int id)
+    public async Task<IActionResult> Get(string id)
     {
         var review = await _applicationContext.Reviews
             .Include(c => c.User)
@@ -243,14 +243,15 @@ public class QuestionsController : ControllerBase
 
 
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] Question question)
+    public async Task<IActionResult> Post([FromBody] PostQuestionDto question)
     {
-        await _applicationContext.Questions.AddAsync(question);
+        var dbWr = question.Adapt<Question>();
+        await _applicationContext.Questions.AddAsync(dbWr);
         
         await _applicationContext.SaveChangesAsync();
         
         return Ok(new {
-            question.Id
+            dbWr.Id
         });
     }
 
@@ -268,7 +269,7 @@ public class QuestionsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get(int id)
+    public async Task<IActionResult> Get(string id)
     {
         var question = await _applicationContext.Questions
             .FirstAsync(s => s.Id == id);
@@ -320,7 +321,7 @@ public class ReactionsController : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<IActionResult> Delete(long id)
+    public async Task<IActionResult> Delete(string id)
     {
         
         var fReview = await _applicationContext.Reactions.FirstAsync(r => r.Id == id);
@@ -335,7 +336,7 @@ public class ReactionsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get(int id)
+    public async Task<IActionResult> Get(string id)
     {
         var review = await _applicationContext.Reviews
             .Include(c => c.User)
@@ -391,7 +392,7 @@ public class UserWriteToMetingController : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<IActionResult> Delete(long id)
+    public async Task<IActionResult> Delete(string id)
     {
         
         var fReview = await _applicationContext.UserWriteToMetings.FirstAsync(r => r.Id == id);
@@ -406,7 +407,7 @@ public class UserWriteToMetingController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> Get(int id)
+    public async Task<IActionResult> Get(string id)
     {
         var review = await _applicationContext.UserWriteToMetings
             .FirstAsync(s => s.Id == id);
