@@ -73,7 +73,7 @@ builder.Services.AddCors();
 
 var app = builder.Build();
 
-app.UseCors(builder => builder.AllowAnyOrigin().AllowAnyMethod());
+app.UseCors(builder => builder.AllowAnyMethod());
 
 app.UseStaticFiles(new StaticFileOptions
 {
