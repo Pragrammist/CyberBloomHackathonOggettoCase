@@ -37,15 +37,16 @@ public class UsersController : ControllerBase
             Fio = user.Fio,
             Specialities = user.Specialities,
             TelegramBotUrl = user.TelegramBotUrl,
-
+            UserName = user.Username
         };
-        await _userManager.CreateAsync(userWr);
-
-        return Ok(
-            new {
-                userWr.Id
-            }
-        );
+        var result = await _userManager.CreateAsync(userWr);
+        if(result.Succeeded)
+            return Ok(
+                new {
+                    userWr.Id
+                }
+            );
+        return BadRequest(result.Errors);
     }
 
     // [HttpGet("google-auth")]
@@ -205,12 +206,14 @@ public class ReviewsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Get(string id)
     {
-        var review = await _applicationContext.Reviews
-            .Include(c => c.User)
-            .FirstAsync(s => s.Id == id);
+        var review = await _applicationContext.Reviews.FirstAsync(s => s.Id == id);
 
+        var user = await _applicationContext.Users.FirstAsync(s => s.Id == review.UserId);
         
-        return Ok(review);
+        return Ok(new {
+            review,
+            user
+        });
     }
 
     
@@ -222,8 +225,12 @@ public class ReviewsController : ControllerBase
             .Skip(offset)
             .Take(limit);
 
+        // var userIds = reviews.Select(u => u.UserId).ToArray();
+        // var users = _applicationContext.Users.Where(u => userIds.Contains(u.Id));
         
-        return Ok(reviews);
+        return Ok(
+            reviews
+        );
     }
 }
 
@@ -256,7 +263,7 @@ public class QuestionsController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<IActionResult> Put([FromBody]Question question)
+    public async Task<IActionResult> Put([FromBody]PutQuestionDto question)
     {
         
         var fReview = await _applicationContext.Questions.FirstAsync(r => r.Id == question.Id);
@@ -283,6 +290,7 @@ public class QuestionsController : ControllerBase
     public IActionResult GetList(int offset, int limit)
     {
         var questions = _applicationContext.Questions
+            .Include(c => c.User)
             .Skip(offset)
             .Take(limit);
 
@@ -339,11 +347,13 @@ public class ReactionsController : ControllerBase
     public async Task<IActionResult> Get(string id)
     {
         var review = await _applicationContext.Reviews
-            .Include(c => c.User)
             .FirstAsync(s => s.Id == id);
 
-        
-        return Ok(review);
+        var user = await _applicationContext.Users.FirstAsync(s => s.Id == review.UserId);
+        return Ok(new {
+            review,
+            user
+        });
     }
 
     
@@ -351,12 +361,17 @@ public class ReactionsController : ControllerBase
     public IActionResult GetList(int offset, int limit)
     {
         var reviews = _applicationContext.Reviews
-            .Include(c => c.User)
             .Skip(offset)
             .Take(limit);
-
         
-        return Ok(reviews);
+        var users = _applicationContext.Users.Where(u => reviews.Select(u => u.UserId).Contains(u.Id));
+        
+        return Ok(
+            reviews.Select(s => new {
+                review = s,
+                user = users.First(u => u.Id == s.UserId)
+            })
+        );
     }
 }
 

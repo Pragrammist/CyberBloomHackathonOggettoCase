@@ -195,6 +195,13 @@ public class PostQuestionDto
 }
 
 
+public class PutQuestionDto
+{
+    public string Id { get; set; } = null!;
+
+    public string Text { get; set; } = null!;
+}
+
 public class Question
 {
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -205,6 +212,8 @@ public class Question
     public string MeetingId { get; set; } = null!;
 
     public string UserId { get; set; } = null!;
+
+    public User User { get; set; } = null!;
 }
 
 
@@ -214,14 +223,14 @@ public class Review
     public string Id { get; set; } = null!;
 
     public string MeetingId { get; set; } = null!;
-
-    public User User { get; set; } = null!;
     
     public string UserId { get; set; } = null!;
 
     public string Text { get; set; } = null!;
 
     public int Score { get; set; } = 0;
+
+    public User User { get; set; } = null!;
 
     DateTime _date;
     
@@ -280,13 +289,18 @@ public class ApplicationContext : IdentityDbContext<User>
         builder.Entity<Meeting>().HasMany<Review>().WithOne().HasForeignKey(c => c.MeetingId);
         builder.Entity<Meeting>().HasMany<Question>().WithOne().HasForeignKey(c => c.MeetingId);
 
-        builder.Entity<User>().HasMany<Review>().WithOne(r => r.User).HasForeignKey(c => c.UserId);
-        builder.Entity<User>().HasMany<Reaction>().WithOne().HasForeignKey(c => c.UserId);
-        builder.Entity<Question>().HasOne<Meeting>().WithMany().HasForeignKey(c => c.UserId);
+        
+        
+        
+        builder.Entity<Reaction>().HasOne<User>().WithMany().HasForeignKey(c => c.UserId);
+        builder.Entity<Review>().HasOne(c => c.User).WithMany().HasForeignKey(c => c.UserId);
 
-        builder.Entity<Question>().HasMany<Reaction>().WithOne().HasForeignKey(c => c.QuestionId);
+        builder.Entity<Question>().HasOne<Meeting>().WithMany().HasForeignKey(c => c.MeetingId);
+        builder.Entity<Question>().HasOne(c => c.User).WithMany().HasForeignKey(c => c.UserId);
+        
+        builder.Entity<Reaction>().HasOne<Question>().WithMany().HasForeignKey(c => c.QuestionId);
 
         builder.Entity<Meeting>().HasMany<UserWriteToMeting>().WithOne().HasForeignKey(c => c.MeetingId);
-        builder.Entity<User>().HasMany<UserWriteToMeting>().WithOne().HasForeignKey(c => c.UserId);
+        builder.Entity<UserWriteToMeting>().HasOne<User>().WithMany().HasForeignKey(c => c.UserId);
     }
 }
