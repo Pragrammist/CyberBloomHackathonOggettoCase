@@ -204,7 +204,7 @@ public class UsersController : ControllerBase
         });
     }
 
-    [HttpPost("/login")]
+    [HttpPost("login")]
     public async Task<IActionResult> Login(string email)
     {
         var user = await _userManager.FindByEmailAsync(email);
