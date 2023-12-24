@@ -1,17 +1,12 @@
-using Microsoft.AspNetCore.Identity;
-
-
-public class User : IdentityUser
+public class UserPost
 {
-    public string AvatarUrl { get; set; } = null!;
+    public IFormFile Avatar { get; set; } = null!;
 
     public string Fio { get; set; } = null!;
+
+    public string Username { get; set; } = null!;
 
     public string Specialities { get; set; } = null!;
 
     public string TelegramBotUrl { get; set; } = null!;
-
-    public int Level { get; set; }
-
-
 }
