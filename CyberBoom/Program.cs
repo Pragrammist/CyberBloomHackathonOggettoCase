@@ -87,6 +87,10 @@ builder.Services.AddCors();
 var app = builder.Build();
 
 app.UseCors(builder => builder.AllowAnyMethod());
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+      ForwardedHeaders = ForwardedHeaders.XForwardedProto
+});
 
 app.UseStaticFiles(new StaticFileOptions
 {
