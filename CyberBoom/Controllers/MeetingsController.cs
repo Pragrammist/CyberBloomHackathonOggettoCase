@@ -45,8 +45,12 @@ public class MeetingsController : ControllerBase
         meetingWrite.SpeackerImage = meeting.SpeackerImage.JoinFileNames();
         meetingWrite.PlaceImages = meeting.PlaceImages.JoinFileNames();
 
-        var findedMeeting = await _applicationContext.Meetings.FirstAsync(s => s.Id == meeting.Id);
-        findedMeeting = meetingWrite;
+        
+        
+        _applicationContext.Entry(meetingWrite).State = EntityState.Modified;
+        _applicationContext.Update(meetingWrite);
+
+        //findedMeeting = meetingWrite;
 
         await _applicationContext.SaveChangesAsync();
         return Ok();

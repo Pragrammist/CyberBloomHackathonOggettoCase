@@ -204,6 +204,23 @@ public class UsersController : ControllerBase
         });
     }
 
+    [HttpPost("/login")]
+    public async Task<IActionResult> Login(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+
+        if(user is null)
+            return BadRequest();
+
+        var role = await _userManager.GetRolesAsync(user);
+        var token = GetToken(user, role.First());
+
+        return Ok(new {
+            token,
+            user
+        });
+    }
+
     [Authorize]
     [HttpGet]
     public async Task<IActionResult> GetUserData(string id)
