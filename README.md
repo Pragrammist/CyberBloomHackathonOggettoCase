@@ -11,7 +11,7 @@
 ![Схема](img/scheme.png "scheme")
 
 # Схема БД
-![Схема](img/scheme.png "scheme")
+![Схема БД](img/db.jpg "scheme")
 
 # Docker
 
