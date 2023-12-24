@@ -204,6 +204,7 @@ public class UsersController : ControllerBase
         });
     }
 
+    [AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> Login(string email)
     {
