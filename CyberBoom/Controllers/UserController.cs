@@ -1,21 +1,13 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Internal;
-using Microsoft.IdentityModel.Tokens;
-using static Consts;
 
 namespace CyberBoom.Controllers;
-
-
 
 [ApiController]
 [Route("/api/[controller]")]
@@ -148,7 +140,7 @@ public class UsersController : ControllerBase
     [HttpGet("signin-google")]
     public IActionResult SignInWithGoogle()
     {
-        var properties = new AuthenticationProperties { RedirectUri = Url.Action("SignInWithGoogleCallback") };
+        var properties = new AuthenticationProperties { RedirectUri = "https://cyberbloom.zetcraft.ru/api/users/signin-google" };
         return Challenge(properties, GoogleDefaults.AuthenticationScheme);
     }
 

@@ -4,8 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Mapster;
 using static Consts;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.Google;
 
@@ -47,7 +45,8 @@ builder.Services.AddAuthentication(opt => {
 {
     options.ClientId = builder.Configuration["Google:ClientId"]!;
     options.ClientSecret = builder.Configuration["Google:ClientSecret"]!;
-});;
+    options.CallbackPath = "https://cyberbloom.zetcraft.ru/api/users/google-sign-in";
+});
 
 
 
