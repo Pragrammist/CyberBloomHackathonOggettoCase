@@ -7,7 +7,9 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.HttpOverrides;
-
+using Hangfire;
+using Hangfire.PostgreSql;
+using Hangfire.Dashboard;
 
 TypeAdapterConfig<PutMeetingDto, Meeting>.NewConfig().Map(d => d.SpeackerImage, s => s.SpeackerImage.JoinFileNames()); 
 TypeAdapterConfig<PostMeetingDto, Meeting>.NewConfig().Map(d => d.SpeackerImage, s => s.SpeackerImage.JoinFileNames());
@@ -50,6 +52,16 @@ builder.Services.AddAuthentication(opt => {
 });
 
 
+builder.Services.AddHangfire(configuration => configuration
+        .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+        .UseSimpleAssemblyNameTypeSerializer()
+        .UseRecommendedSerializerSettings()
+        .UsePostgreSqlStorage(c =>
+        c.UseNpgsqlConnection(builder.Configuration["CONNECTION_STRING"])));
+        //.UseSqlServerStorage(Configuration.GetConnectionString("HangfireConnection")));
+
+    // Add the processing server as IHostedService
+builder.Services.AddHangfireServer();
 
 
 builder.Services.AddControllers();
@@ -87,11 +99,15 @@ builder.Services.AddCors();
 
 var app = builder.Build();
 
+
+
 app.UseCors(builder => builder.AllowAnyMethod());
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
       ForwardedHeaders = ForwardedHeaders.XForwardedProto
 });
+
+
 
 app.UseStaticFiles(new StaticFileOptions
 {
@@ -100,9 +116,12 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/api/cyber-boom-files"
 });
 
+
+
 // Configure the HTTP request pipeline.
 app.UseSwagger();
 app.UseSwaggerUI();
+
 
 
 
@@ -110,8 +129,31 @@ app.UseAuthentication();    // подключение аутентификаци
 app.UseAuthorization();
 
 
+app.UseHangfireDashboard("/workers", new DashboardOptions
+{
+    Authorization = new [] { new AdminAuthorizationFilter() }
+});
+
+
+
+
 
 app.MapControllers();
+app.MapHangfireDashboard();
 //app.MapRazorPages();
 
 app.Run();
+
+
+public class AdminAuthorizationFilter : IDashboardAuthorizationFilter
+{
+    public bool Authorize(DashboardContext context)
+    {
+        var user = context.GetHttpContext().User;
+
+        if (user.IsInRole("модератор"))
+            return true;
+
+        return false;
+    }
+}
