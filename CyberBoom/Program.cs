@@ -45,7 +45,7 @@ builder.Services.AddAuthentication(opt => {
 {
     options.ClientId = builder.Configuration["Google:ClientId"]!;
     options.ClientSecret = builder.Configuration["Google:ClientSecret"]!;
-    options.CallbackPath = "https://cyberbloom.zetcraft.ru/api/users/google-sign-in";
+    options.CallbackPath = "/api/signin-google";
 });
 
 

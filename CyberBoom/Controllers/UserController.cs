@@ -58,7 +58,8 @@ public class UsersController : ControllerBase
             Fio = user.Fio,
             Specialities = user.Specialities,
             TelegramBotUrl = user.TelegramBotUrl,
-            UserName = user.Username
+            UserName = user.Username,
+            Email = user.Email
         };
         var result = await _userManager.CreateAsync(userWr);
 
@@ -103,7 +104,7 @@ public class UsersController : ControllerBase
         fuser.Specialities = user.Specialities;
         fuser.TelegramBotUrl = user.TelegramBotUrl;
         fuser.UserName = user.Username;
-
+        fuser.Email = user.Email;
         var result = await _userManager.UpdateAsync(fuser);
         if (result.Succeeded)
             return Ok();
@@ -140,7 +141,7 @@ public class UsersController : ControllerBase
     [HttpGet("signin-google")]
     public IActionResult SignInWithGoogle()
     {
-        var properties = new AuthenticationProperties { RedirectUri = "https://cyberbloom.zetcraft.ru/api/users/signin-google" };
+        var properties = new AuthenticationProperties { RedirectUri = Url.Action(nameof(SignInWithGoogleCallback)) };
         return Challenge(properties, GoogleDefaults.AuthenticationScheme);
     }
 

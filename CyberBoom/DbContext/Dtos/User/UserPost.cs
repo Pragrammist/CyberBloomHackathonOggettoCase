@@ -9,4 +9,6 @@ public class UserPost
     public string Specialities { get; set; } = null!;
 
     public string TelegramBotUrl { get; set; } = null!;
+
+    public string Email { get; set; } = null!;
 }
