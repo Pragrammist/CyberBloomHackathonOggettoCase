@@ -1,6 +1,9 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -139,6 +142,73 @@ public class UsersController : ControllerBase
         await AddUerToRole(userWr, role);
         var token = GetToken(userWr, role);
         return Ok(new { userWr.Id, Token = token });
+    }
+
+    [AllowAnonymous]
+    [HttpGet("signin-google")]
+    public IActionResult SignInWithGoogle()
+    {
+        var properties = new AuthenticationProperties { RedirectUri = Url.Action("SignInWithGoogleCallback") };
+        return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+    }
+
+    [AllowAnonymous]
+    [HttpGet("signin-google-callback")]
+    public async Task<IActionResult> SignInWithGoogleCallback()
+    {
+        var result = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+
+        if (result?.Succeeded != true)
+        {
+            return BadRequest("Ошибка аутентификации Google");
+        }
+
+        // Извлеките информацию о пользователе из результата аутентификации
+        var claims = result.Principal!.Identities
+            .FirstOrDefault(y => y.AuthenticationType == GoogleDefaults.AuthenticationScheme)?
+            .Claims;
+
+
+        var email = claims?.FirstOrDefault(x => x.Type == ClaimTypes.Email)!.Value;
+        var name = claims?.FirstOrDefault(x => x.Type == ClaimTypes.Name)!.Value;
+
+        var user = await _userManager.FindByEmailAsync(email!);
+        var role = "спикер";
+        if(user is null)
+        {
+            user = new User
+            {
+                Fio = name!,
+                Specialities = string.Empty,
+                TelegramBotUrl = string.Empty,
+                AvatarUrl = $"https://www.gravatar.com/avatar/{BitConverter.ToString(MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(email!))).Replace("-", "").ToLowerInvariant()}?d=identicon",
+                UserName = name,
+                Email = email
+            };
+            var createResult = await _userManager.CreateAsync(user);
+
+            if (!createResult.Succeeded)
+                return BadRequest(createResult.Errors);
+
+            
+
+           
+
+            await AddUerToRole(user, role);
+        }
+        
+
+        var token = GetToken(user, role);
+
+        
+
+        // Здесь вы можете создать JWT или другой токен для аутентификации в вашем приложении
+        // и отправить его пользователю.
+
+        return Ok(new {
+            Token = token,
+            User = user
+        });
     }
 
     [Authorize]
