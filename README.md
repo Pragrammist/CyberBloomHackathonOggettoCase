@@ -54,5 +54,7 @@ volumes:
 
 ![Сертификат победителя: Хакатон Cyber Garden 22 - 24 декабря https://cybergarden.ru/](img/Hackaton-Win-Certificate.jpg "scheme")
 
+![Сертификат победителя: Хакатон Cyber Garden 22 - 24 декабря https://cybergarden.ru/](img/10.png "scheme")
+
 
 
